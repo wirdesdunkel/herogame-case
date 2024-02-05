@@ -19,6 +19,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController biography = TextEditingController();
   DateTime? selectedDate;
+  bool isLoading = false;
 
   bool obscureText = true;
   final _formkey1 = GlobalKey<FormState>();
@@ -110,8 +111,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
             const SizedBox(height: 12),
             ElevatedButton(
-              child: const Text('Kayıt Ol'),
+              child: !isLoading
+                  ? const Text('Kayıt Ol')
+                  : const CircularProgressIndicator(),
               onPressed: () async {
+                if (isLoading) return;
                 if (_formkey1.currentState!.validate()) {
                   if (selectedDate == null) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -121,6 +125,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     );
                     return;
                   }
+                  setState(() => isLoading = true);
                   final timer = Timer(const Duration(seconds: 10), () {
                     if (mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -129,6 +134,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               'İşlem zaman aşımına uğradı. Lütfen tekrar deneyin.'),
                         ),
                       );
+                      setState(() => isLoading = false);
                     }
                     return;
                   });
@@ -142,7 +148,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     );
                     timer.cancel();
-                    if (mounted) Navigator.pushNamed(context, '/home');
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Kayıt başarılı!'),
+                        ),
+                      );
+                    }
+                    setState(() => isLoading = false);
                   } catch (e) {
                     timer.cancel();
                     if (mounted) {
@@ -152,6 +165,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       );
                     }
+                    setState(() => isLoading = false);
                   }
                 }
               },

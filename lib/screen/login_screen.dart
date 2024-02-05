@@ -70,10 +70,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     'Giriş Yap',
                   ),
                   onPressed: () async {
+                    if (isLoading) return;
                     if (_formkey.currentState!.validate()) {
-                      setState(() {
-                        isLoading = true;
-                      });
+                      setState(() => isLoading = true);
                       final timer = Timer(const Duration(seconds: 10), () {
                         if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -93,9 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           password: passwordController.text,
                         );
                         timer.cancel();
-                        setState(() {
-                          isLoading = false;
-                        });
+                        setState(() => isLoading = false);
                       } catch (e) {
                         timer.cancel();
 
@@ -105,17 +102,13 @@ class _LoginScreenState extends State<LoginScreen> {
                               content: Text(e.toString()),
                             ),
                           );
-                          setState(() {
-                            isLoading = false;
-                          });
+                          setState(() => isLoading = false);
                         }
                       }
                     }
                   },
                 ),
-                const SizedBox(
-                  height: 50,
-                ),
+                const SizedBox(height: 40),
                 SizedBox(
                   width: size.width,
                   child: Row(
